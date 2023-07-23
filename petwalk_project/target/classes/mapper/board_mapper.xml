@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+	<!--네임스페이스의 충돌을 방지하기 위해 설정한다/ 네임스페이스의 기준은 패키지로 잡는다 -->
+<mapper namespace="gh.mybatis.board">
+
+	<!-- 전체 컬럼값을 조회하고 결과 저장은 BoardDTO 클래스로 설정한다. -->
+<select id="gh.mybatis.board.selectAll" resultType="BoardDTO">
+select num, id,  subject, to_char(writeday, 'yyyy-mm-dd') writeday
+from board
+ ORDER BY num DESC
+</select>
+		
+	<!-- 개별 컬럼값을 조회하고 조회할 파라미터와 결과 저장은 BoardDTO 클래스로 설정한다. -->
+<select id="gh.mybatis.board.select" parameterType="BoardDTO" resultType="BoardDTO"> 
+select num, id, subject, pay, cellnum, content, attachedfile, to_char(writeday, 'yyyy-mm-dd') writeday
+from board
+where num = #{num}
+</select>
+
+	<!-- 컬럼값을 입력하고 입력할 파라미터는 BoardDTO 클래스로 설정한다. -->
+<insert id="gh.mybatis.board.insert" parameterType="BoardDTO">
+  INSERT INTO board (num, id, subject, pay, cellnum, content, attachedfile, writeday)
+  VALUES (board_seq.nextval, #{id}, #{subject}, #{pay}, #{cellnum}, #{content}, #{attachedfile}, SYSDATE)
+</insert>
+
+	
+	<!-- 컬럼값을 수정하고 수정할 파라미터는 BoardDTO 클래스로 설정한다. -->
+<update id="gh.mybatis.board.update" parameterType="BoardDTO">
+update board set subject = #{subject}, attachedfile= #{attachedfile}, pay= #{pay}, cellnum= #{cellnum}, content= #{content}
+where num = #{num}
+</update>
+
+	<!-- 컬럼값을 삭제하고 삭제할 파라미터는 BoardDTO 클래스로 설정한다. -->
+<delete id="gh.mybatis.board.delete" parameterType="BoardDTO">
+delete from board 
+where num= #{num}
+</delete>
+
+<!-- 전체 게시글 수  -->
+<select id="gh.mybatis.board.boardCount" resultType="java.lang.Integer">
+select count(*) from board
+</select>
+
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--네임스페이스의 충돌을 방지하기 위해 설정한다./ 네임스페이스의 기준은 패키지로 잡는다 -->
+<mapper namespace="gh.mybatis.member">
+
+<!-- 전체 컬럼값을 조회하고 결과 저장은 MemberDTO 클래스로 설정한다. -->
+<select id="gh.mybatis.member.selectAll" resultType="MemberDTO">
+select num, id,  password, name, nickname, to_char(birthday, 'yyyy-mm-dd') birthday, cellnum, email, to_char(joinday, 'yyyy-mm-dd') joinday 
+from member
+WHERE id != 'admin'
+</select> 
+
+<!-- 개별 컬럼값을 조회하고 조회할 파라미터와 결과 저장은 MemberDTO 클래스로 설정한다. -->
+<select id="gh.mybatis.member.select" parameterType="MemberDTO" resultType="MemberDTO"> 
+select num, id, nickname, password, name, to_char(birthday, 'yyyy-mm-dd') birthday, email, cellnum, to_char(joinday, 'yyyy-mm-dd') joinday 
+from member
+where id=#{id}
+</select>
+	
+<!-- 컬럼값을 입력하고 입력할 파라미터는 MemberDTO 클래스로 설정한다. -->
+<insert id="gh.mybatis.member.insert" parameterType="MemberDTO">
+insert into member (id, nickname, password, name, birthday, email, cellnum, num)
+values(#{id}, #{nickname}, #{password}, #{name}, #{birthday}, #{email}, #{cellnum}, #{num})
+</insert>
+	
+<!-- 컬럼값을 수정하고 수정할 파라미터는 MemberDTO 클래스로 설정한다. -->
+<update id="gh.mybatis.member.update" parameterType="MemberDTO">
+update member set password = #{password}, email= #{email}, cellnum= #{cellnum}
+where id = #{id}
+</update>
+	
+<!-- 컬럼값을 삭제하고 삭제할 파라미터는 MemberDTO 클래스로 설정한다. -->
+<delete id="gh.mybatis.member.delete" parameterType="MemberDTO">
+delete from member
+where id = #{id}
+</delete>
+
+<!-- 아이디 중복 체크 -->
+<select id="gh.mybatis.member.idCheck" parameterType="java.lang.String" resultType="java.lang.Integer">
+select count(1) from member
+where id = #{id}
+</select> 
+
+<!-- 전체 회원수  -->
+<select id="gh.mybatis.member.memberCount" resultType="Integer">
+select count(*) from member
+WHERE id != 'admin'
+</select>
+
+	<!-- 로그인 -->
+	<select id="gh.mybatis.member.login" resultType="String">
+		SELECT name from member 
+		WHERE id=#{id} AND password=#{password}
+	</select>
+	
+	<!-- 이름과 이메일을 DB와 비교하여 해당 id 찾기 -->
+	<select id="gh.mybatis.member.searchId" parameterType="hashmap" resultType="MemberDTO">
+	select * from member 
+	where (name= #{name} and email = #{email})
+	</select>
+
+	<!-- 아이디와 이메일을 DB와 비교하여 해당 pw 찾기 -->
+	<select id="gh.mybatis.member.searchPassword" parameterType="hashmap" resultType="MemberDTO">
+	select * from member 
+	where (id= #{id} and email = #{email})
+	</select>
+	
+</mapper>
